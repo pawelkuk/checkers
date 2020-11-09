@@ -80,3 +80,50 @@ def test_man_can_move_diagonal(initial_board, moves, expected_board):
     for move in moves:
         initial_board.move(move)
     assert str(initial_board) == str(expected_board)
+
+
+jumpdata = [
+    (
+        """
+-o- 
+ -o-
+-x- 
+x- -
+""",
+        Move(start=(2, "B"), end=(4, "D")),
+        """
+-o-x
+ - -
+- - 
+x- -
+""",
+        4,
+    ),
+    (
+        """
+-o- -
+o- - 
+-o-o-
+x- - 
+- - -
+
+""",
+        Move(start=(2, "A"), end=(2, "E")),
+        """
+-o- -
+o- - 
+- - -
+ - -x
+- - -
+""",
+        5,
+    ),
+]
+
+
+@pytest.mark.parametrize("board_before_jump,move,board_after_jump,dim", jumpdata)
+def test_man_can_jump_over_opponents(board_before_jump, move, board_after_jump, dim):
+    board_before_jump = CheckersBoard.from_ascii(board_before_jump, dim=dim)
+    board_after_jump = CheckersBoard.from_ascii(board_after_jump, dim=dim)
+    board_before_jump.move(move)
+    assert str(board_before_jump) == str(board_after_jump)

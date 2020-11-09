@@ -1,5 +1,5 @@
-from .piece import char_to_piece, Piece, AccessibleField, Man, FlyingKing
-from typing import Tuple, Iterable, List
+from .piece import char_to_piece, Piece, AccessibleField, Man, FlyingKing, Color
+from typing import Tuple, Iterable, List, Optional
 
 
 class Move:
@@ -9,6 +9,21 @@ class Move:
 
     def __eq__(self, other):
         return self.start == other.start and self.end == other.end
+
+
+class SimpleMove(Move):
+    ...
+
+
+class JumpMove(Move):
+    def __init__(
+        self,
+        start: Tuple[int, str],
+        end: Tuple[int, str],
+        captured: List[Tuple[int, int]],
+    ):
+        super().__init__(start=start, end=end)
+        self.captured = captured
 
 
 class Board:
@@ -69,14 +84,21 @@ class CheckersBoard(Board):
             raise TypeError("One can move only pieces")
         if not isinstance(self[move.end], AccessibleField):
             raise TypeError("The field is not accessable")
-        if self._is_valid(move):
-            self[move.end] = self[move.start]
-            self[move.start] = AccessibleField()
+        possible_moves = self._possible_moves(move.start)
+        for m in possible_moves:
+            if m != move:
+                continue
+            if isinstance(m, SimpleMove):
+                self[m.end] = self[m.start]
+                self[m.start] = AccessibleField()
+            if isinstance(m, JumpMove):
+                self[m.end] = self[m.start]
+                self[m.start] = AccessibleField()
+                for captured in m.captured:
+                    x, y = captured
+                    self._board[x][y] = AccessibleField()
 
-    def _is_valid(self, move: Move):
-        return move in self._possible_moves(start=move.start)
-
-    def _possible_moves(self, start: Tuple[int, str]) -> Iterable[Move]:
+    def _possible_moves(self, start: Tuple[int, str]) -> Iterable[SimpleMove]:
         piece = self[start]
         x, y = self._cord2idx(*start)
         if type(piece) == Man:
@@ -85,21 +107,35 @@ class CheckersBoard(Board):
             possible_moves = self._explore_flying_king_rules(x, y)
         else:
             raise TypeError
-        possible_moves = [
-            Move(start=start, end=self._ind2cord(end)) for end in possible_moves
-        ]
+
         return possible_moves
 
     def _explore_man_rules(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
+        start = self._ind2cord((x, y))
+
         if self._can_capture(x, y):
-            return self._get_moves_with_max_capture(x, y)
+            move_with_captured_pieces = self._get_moves_with_max_capture(
+                x, y, color=self._board[x][y].color
+            )
+            possible_moves = [
+                JumpMove(start=start, end=self._ind2cord(end), captured=captured)
+                for captured, end in [move_with_captured_pieces]
+            ]
         else:
-            return self._get_diagonal_moves(x, y)
+            possible_moves = self._get_diagonal_moves(x, y)
+            possible_moves = [
+                SimpleMove(start=start, end=self._ind2cord(end))
+                for end in possible_moves
+            ]
+        return possible_moves
 
     def _explore_flying_king_rules(self, x, y):
         raise NotImplementedError
 
-    def _can_capture(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
+    def _can_capture(
+        self, x: int, y: int, color: Optional[Color] = None
+    ) -> Iterable[Tuple[int, int]]:
+        color = color or self._board[x][y].color
         can_capture = []
         dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
         for dx, dy in dirs:
@@ -109,7 +145,7 @@ class CheckersBoard(Board):
                 continue
             if not isinstance(self._board[opponent_x][opponent_y], Piece):
                 continue
-            if self._board[opponent_x][opponent_y].color == self._board[x][y].color:
+            if self._board[opponent_x][opponent_y].color == color:
                 continue
             if self._board[after_jump_x][after_jump_y] == AccessibleField():
                 can_capture.append((dx, dy))
@@ -129,21 +165,26 @@ class CheckersBoard(Board):
         return potential_moves
 
     def _get_moves_with_max_capture(
-        self, x: int, y: int, captured=None
-    ) -> Iterable[Move]:
+        self,
+        x: int,
+        y: int,
+        color: Color,
+        captured=None,
+    ) -> Tuple[List[Tuple[int, int]], Tuple[int, int]]:
         blah = []
         captured = captured or []
-        possible_captures = self._can_capture(x, y)
+        possible_captures = self._can_capture(x, y, color=color)
+
+        possible_captures = [
+            (dx, dy) for dx, dy in possible_captures if (x + dx, y + dy) not in captured
+        ]
         if not possible_captures:
-            return captured
+            return captured, (x, y)
         for dx, dy in possible_captures:
             new_capture = x + dx, y + dy
-            if new_capture in captured:
-                continue
             new_x, new_y = x + 2 * dx, y + 2 * dy
             max_captured = self._get_moves_with_max_capture(
-                new_x, new_y, captured + [new_capture]
+                new_x, new_y, captured=captured + [new_capture], color=color
             )
             blah.append(max_captured)
-        print(blah)
-        return max(blah, key=lambda x: len(captured))
+        return max(blah, key=lambda x: len(x[0]))
