@@ -99,7 +99,8 @@ class CheckersBoard(Board):
     def _explore_flying_king_rules(self, x, y):
         raise NotImplementedError
 
-    def _can_capture(self, x, y):
+    def _can_capture(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
+        can_capture = []
         dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
         for dx, dy in dirs:
             opponent_x, opponent_y = x + dx, y + dy
@@ -111,8 +112,8 @@ class CheckersBoard(Board):
             if self._board[opponent_x][opponent_y].color == self._board[x][y].color:
                 continue
             if self._board[after_jump_x][after_jump_y] == AccessibleField():
-                return True
-        return False
+                can_capture.append((dx, dy))
+        return can_capture
 
     def _get_diagonal_moves(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
         piece: Man = self._board[x][y]
@@ -127,5 +128,22 @@ class CheckersBoard(Board):
         ]
         return potential_moves
 
-    def _get_moves_with_max_capture(x: int, y: int) -> Iterable[Move]:
-        raise NotImplementedError
+    def _get_moves_with_max_capture(
+        self, x: int, y: int, captured=None
+    ) -> Iterable[Move]:
+        blah = []
+        captured = captured or []
+        possible_captures = self._can_capture(x, y)
+        if not possible_captures:
+            return captured
+        for dx, dy in possible_captures:
+            new_capture = x + dx, y + dy
+            if new_capture in captured:
+                continue
+            new_x, new_y = x + 2 * dx, y + 2 * dy
+            max_captured = self._get_moves_with_max_capture(
+                new_x, new_y, captured + [new_capture]
+            )
+            blah.append(max_captured)
+        print(blah)
+        return max(blah, key=lambda x: len(captured))
