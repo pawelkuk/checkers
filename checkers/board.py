@@ -113,13 +113,13 @@ class CheckersBoard(Board):
     def _explore_man_rules(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
         start = self._ind2cord((x, y))
 
-        if self._can_capture(x, y):
+        if self._can_capture_from(x, y):
             move_with_captured_pieces = self._get_moves_with_max_capture(
                 x, y, color=self._board[x][y].color
             )
             possible_moves = [
                 JumpMove(start=start, end=self._ind2cord(end), captured=captured)
-                for captured, end in [move_with_captured_pieces]
+                for captured, end in move_with_captured_pieces
             ]
         else:
             possible_moves = self._get_diagonal_moves(x, y)
@@ -132,7 +132,7 @@ class CheckersBoard(Board):
     def _explore_flying_king_rules(self, x, y):
         raise NotImplementedError
 
-    def _can_capture(
+    def _can_capture_from(
         self, x: int, y: int, color: Optional[Color] = None
     ) -> Iterable[Tuple[int, int]]:
         color = color or self._board[x][y].color
@@ -170,21 +170,24 @@ class CheckersBoard(Board):
         y: int,
         color: Color,
         captured=None,
-    ) -> Tuple[List[Tuple[int, int]], Tuple[int, int]]:
-        blah = []
+    ) -> List[Tuple[List[Tuple[int, int]], Tuple[int, int]]]:
+        new_captures = []
         captured = captured or []
-        possible_captures = self._can_capture(x, y, color=color)
-
+        possible_captures = self._can_capture_from(x, y, color=color)
         possible_captures = [
             (dx, dy) for dx, dy in possible_captures if (x + dx, y + dy) not in captured
         ]
         if not possible_captures:
-            return captured, (x, y)
+            return [(captured, (x, y))]
         for dx, dy in possible_captures:
             new_capture = x + dx, y + dy
             new_x, new_y = x + 2 * dx, y + 2 * dy
             max_captured = self._get_moves_with_max_capture(
                 new_x, new_y, captured=captured + [new_capture], color=color
             )
-            blah.append(max_captured)
-        return max(blah, key=lambda x: len(x[0]))
+            new_captures.extend(max_captured)
+        max_capture = max([len(c[0]) for c in new_captures])
+        equivalent_max_captures = [
+            cap for cap in new_captures if len(cap[0]) == max_capture
+        ]
+        return equivalent_max_captures
