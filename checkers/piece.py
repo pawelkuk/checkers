@@ -38,6 +38,7 @@ class Black(Color):
 class Piece:
     def __init__(self, color: Color):
         self.color = color
+        self.char = color.char
 
     def __str__(self):
         return str(self.color)

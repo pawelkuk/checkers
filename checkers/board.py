@@ -126,3 +126,6 @@ class CheckersBoard(Board):
             (x, y) for x, y in potential_moves if self._board[x][y] == AccessibleField()
         ]
         return potential_moves
+
+    def _get_moves_with_max_capture(x: int, y: int) -> Iterable[Move]:
+        raise NotImplementedError
