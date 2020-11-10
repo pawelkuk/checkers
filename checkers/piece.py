@@ -48,7 +48,7 @@ class Piece:
 
 
 class Man(Piece):
-    def get_diagonal_moves(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
+    def get_diagonal_moves(self, x: int, y: int, dim: int) -> Iterable[Tuple[int, int]]:
         if isinstance(self.color, White):
             return [(x - 1, y - 1), (x - 1, y + 1)]
         elif isinstance(self.color, Black):
@@ -58,6 +58,17 @@ class Man(Piece):
 class FlyingKing(Piece):
     def __str__(self):
         return str(self.color).capitalize()
+
+    def get_diagonal_moves(self, x: int, y: int, dim: int) -> Iterable[Tuple[int, int]]:
+        dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        moves = []
+        for dx, dy in dirs:
+            for i in range(1, dim):
+                new_x, new_y = x + i * dx, y + i * dy
+                if not (0 <= new_x < dim and 0 <= new_y < dim):
+                    break
+                moves.append((new_x, new_y))
+        return moves
 
 
 char_to_piece = {

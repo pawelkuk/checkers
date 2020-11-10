@@ -120,7 +120,7 @@ class CheckersBoard(Board):
 
         if self._can_capture_from(x, y):
             move_with_captured_pieces = self._get_moves_with_max_capture(
-                x, y, color=self._board[x][y].color
+                x, y, color=self._board[x][y].color, mode="man"
             )
             possible_moves = [
                 JumpMove(start=start, end=self._ind2cord(end), captured=captured)
@@ -135,11 +135,54 @@ class CheckersBoard(Board):
         return possible_moves
 
     def _explore_flying_king_rules(self, x, y):
-        raise NotImplementedError
+        start = self._ind2cord((x, y))
+        if self._can_capture_as_flying_king_from(x, y):
+            move_with_captured_pieces = self._get_moves_with_max_capture(
+                x, y, color=self._board[x][y].color, mode="flying_king"
+            )
+            possible_moves = [
+                JumpMove(start=start, end=self._ind2cord(end), captured=captured)
+                for captured, end in move_with_captured_pieces
+            ]
+        else:
+            possible_moves = self._get_diagonal_moves(x, y)
+            possible_moves = [
+                SimpleMove(start=start, end=self._ind2cord(end))
+                for end in possible_moves
+            ]
+        return possible_moves
+
+    def _can_capture_as_flying_king_from(
+        self, x: int, y: int, color: Optional[Color] = None
+    ) -> Iterable[Tuple[Tuple[int, int], Tuple[int, int]]]:
+        color = color or self._board[x][y].color
+        dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        capture_end_position_pairs = []
+        for dx, dy in dirs:
+            for i in range(1, self.dim):
+                new_x, new_y = x + i * dx, y + i * dy
+                if not (0 <= new_x < self.dim and 0 <= new_y < self.dim):
+                    break
+                if not isinstance(self._board[new_x][new_y], Piece):
+                    continue
+                if self._board[new_x][new_y].color == color:
+                    break
+                for j in range(i + 1, self.dim):
+                    end_x, end_y = x + j * dx, y + j * dy
+                    if not (0 <= end_x < self.dim and 0 <= end_y < self.dim):
+                        break
+                    if isinstance(self._board[end_x][end_y], Piece):
+                        break
+                    if self._board[end_x][end_y] == AccessibleField():
+                        capture_end_position_pairs.append(
+                            ((i * dx, i * dy), (end_x, end_y))
+                        )
+                break
+        return capture_end_position_pairs
 
     def _can_capture_from(
         self, x: int, y: int, color: Optional[Color] = None
-    ) -> Iterable[Tuple[int, int]]:
+    ) -> Iterable[Tuple[Tuple[int, int], Tuple[int, int]]]:
         color = color or self._board[x][y].color
         can_capture = []
         dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
@@ -153,12 +196,12 @@ class CheckersBoard(Board):
             if self._board[opponent_x][opponent_y].color == color:
                 continue
             if self._board[after_jump_x][after_jump_y] == AccessibleField():
-                can_capture.append((dx, dy))
+                can_capture.append(((dx, dy), (x + 2 * dx, y + 2 * dy)))
         return can_capture
 
     def _get_diagonal_moves(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
         piece: Man = self._board[x][y]
-        potential_moves = piece.get_diagonal_moves(x, y)
+        potential_moves = piece.get_diagonal_moves(x, y, self.dim)
         potential_moves = [
             (x, y)
             for x, y in potential_moves
@@ -170,21 +213,32 @@ class CheckersBoard(Board):
         return potential_moves
 
     def _get_moves_with_max_capture(
-        self, x: int, y: int, color: Color, captured=None,
+        self,
+        x: int,
+        y: int,
+        color: Color,
+        captured=None,
+        mode: str = "man",
     ) -> List[Tuple[List[Tuple[int, int]], Tuple[int, int]]]:
         new_captures = []
         captured = captured or []
-        possible_captures = self._can_capture_from(x, y, color=color)
+        possible_captures = (
+            self._can_capture_from(x, y, color=color)
+            if mode == "man"
+            else self._can_capture_as_flying_king_from(x, y, color=color)
+        )
         possible_captures = [
-            (dx, dy) for dx, dy in possible_captures if (x + dx, y + dy) not in captured
+            ((dx, dy), pos)
+            for (dx, dy), pos in possible_captures
+            if (x + dx, y + dy) not in captured
         ]
         if not possible_captures:
             return [(captured, (x, y))]
-        for dx, dy in possible_captures:
+        for (dx, dy), (new_x, new_y) in possible_captures:
             new_capture = x + dx, y + dy
-            new_x, new_y = x + 2 * dx, y + 2 * dy
+            # new_x, new_y = x + 2 * dx, y + 2 * dy
             max_captured = self._get_moves_with_max_capture(
-                new_x, new_y, captured=captured + [new_capture], color=color
+                new_x, new_y, captured=captured + [new_capture], color=color, mode=mode
             )
             new_captures.extend(max_captured)
         max_capture = max([len(c[0]) for c in new_captures])

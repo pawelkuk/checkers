@@ -272,3 +272,197 @@ def test_man_can_convert_to_flying_king_after_reaching_end_of_board(
     then = CheckersBoard.from_ascii(then, dim=dim)
     given.move(move)
     assert str(given) == str(then)
+
+
+flying_king_moves_all_over_the_board = [
+    (
+        """
+- - 
+ - -
+- - 
+X- -
+""",
+        Move(start=(1, "A"), end=(4, "D")),
+        """
+- -X
+ - -
+- - 
+ - -
+""",
+        4,
+    ),
+    (
+        """
+- - 
+ - -
+- - 
+X- -
+""",
+        Move(start=(1, "A"), end=(3, "C")),
+        """
+- - 
+ -X-
+- - 
+ - -
+""",
+        4,
+    ),
+    (
+        """
+- -o
+ -o-
+- - 
+X- -
+""",
+        Move(start=(1, "A"), end=(2, "B")),
+        """
+- -o
+ -o-
+-X- 
+ - -
+""",
+        4,
+    ),
+    (
+        """
+- - 
+ - -
+- -X
+ - -
+""",
+        Move(start=(2, "D"), end=(4, "B")),
+        """
+-X- 
+ - -
+- - 
+ - -
+""",
+        4,
+    ),
+]
+
+
+@pytest.mark.parametrize("given,move,then,dim", flying_king_moves_all_over_the_board)
+def test_flying_king_can_move_all_over_the_board(given, move: Move, then, dim):
+    given = CheckersBoard.from_ascii(given, dim=dim)
+    then = CheckersBoard.from_ascii(then, dim=dim)
+    given.move(move)
+    assert str(given) == str(then)
+
+
+flying_king_captures_opponents = [
+    (
+        """
+- - 
+ - -
+-o- 
+X- -
+""",
+        Move(start=(1, "A"), end=(4, "D")),
+        """
+- -X
+ - -
+- - 
+ - -
+""",
+        4,
+    ),
+    (
+        """
+- - 
+ - -
+-o- 
+X- -
+""",
+        Move(start=(1, "A"), end=(3, "C")),
+        """
+- - 
+ -X-
+- - 
+ - -
+""",
+        4,
+    ),
+    (
+        """
+- - - - 
+ - - - -
+- - - - 
+ - - - -
+- -o- - 
+ - - - -
+-o- - - 
+X- - - -
+""",
+        Move(start=(1, "A"), end=(8, "H")),
+        """
+- - - -X
+ - - - -
+- - - - 
+ - - - -
+- - - - 
+ - - - -
+- - - - 
+ - - - -
+""",
+        8,
+    ),
+    (
+        """
+- - - - 
+ - - - -
+- -o- - 
+ - - - -
+- -o- - 
+ - - - -
+-o- - - 
+X- - - -
+""",
+        Move(start=(1, "A"), end=(8, "B")),
+        """
+-X- - - 
+ - - - -
+- - - - 
+ - - - -
+- - - - 
+ - - - -
+- - - - 
+ - - - -
+""",
+        8,
+    ),
+    (
+        """
+- - - - 
+ - - - -
+- -o- - 
+ - - - -
+- -o-o- 
+ - - - -
+-o- -o- 
+X- - - -
+""",
+        Move(start=(1, "A"), end=(1, "E")),
+        """
+- - - - 
+ - - - -
+- -o- - 
+ - - - -
+- - - - 
+ - - - -
+- - - - 
+ - -X- -
+""",
+        8,
+    ),
+]
+
+
+@pytest.mark.parametrize("given,move,then,dim", flying_king_captures_opponents)
+def test_flying_king_jumps_over_opponents_according_to_rules(
+    given, move: Move, then, dim
+):
+    given = CheckersBoard.from_ascii(given, dim=dim)
+    then = CheckersBoard.from_ascii(then, dim=dim)
+    given.move(move)
+    assert str(given) == str(then)
