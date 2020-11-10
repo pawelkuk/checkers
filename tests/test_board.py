@@ -92,7 +92,7 @@ x- -
 """,
         Move(start=(2, "B"), end=(4, "D")),
         """
--o-x
+-o-X
  - -
 - - 
 x- -
@@ -129,7 +129,7 @@ o- -
 """,
         Move(start=(1, "B"), end=(7, "D")),
         """
-- -x- -
+- -X- -
  - - - 
 - - - -
  - - - 
@@ -183,6 +183,22 @@ o- -
 """,
         7,
     ),
+    (
+        """
+- - 
+ - -
+-X- 
+o- -
+""",
+        Move(start=(1, "A"), end=(3, "C")),
+        """
+- - 
+ -o-
+- - 
+ - -
+""",
+        4,
+    ),
 ]
 
 
@@ -192,3 +208,67 @@ def test_man_can_jump_over_opponents(board_before_jump, move, board_after_jump, 
     board_after_jump = CheckersBoard.from_ascii(board_after_jump, dim=dim)
     board_before_jump.move(move)
     assert str(board_before_jump) == str(board_after_jump)
+
+
+man_flying_king_cases = [
+    (
+        """
+- - 
+x- -
+- - 
+ - -
+""",
+        Move(start=(3, "A"), end=(4, "B")),
+        """
+-X- 
+ - -
+- - 
+ - -
+""",
+        4,
+    ),
+    (
+        """
+- - 
+o-x-
+-x- 
+ - -
+""",
+        Move(start=(3, "A"), end=(1, "C")),
+        """
+- - 
+ -x-
+- - 
+ -O-
+""",
+        4,
+    ),
+    (
+        """
+o- - 
+- - -
+o- - 
+-x-x-
+ - -x
+""",
+        Move(start=(3, "A"), end=(3, "E")),
+        """
+o- - 
+- - -
+ - -o
+- - -
+ - -x
+""",
+        5,
+    ),
+]
+
+
+@pytest.mark.parametrize("given,move,then,dim", man_flying_king_cases)
+def test_man_can_convert_to_flying_king_after_reaching_end_of_board(
+    given, move: Move, then, dim
+):
+    given = CheckersBoard.from_ascii(given, dim=dim)
+    then = CheckersBoard.from_ascii(then, dim=dim)
+    given.move(move)
+    assert str(given) == str(then)

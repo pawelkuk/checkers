@@ -26,6 +26,9 @@ class Color:
     def __str__(self):
         return self.char
 
+    def __eq__(self, other):
+        return self.char == other.char
+
 
 class White(Color):
     char = "x"
@@ -61,7 +64,7 @@ char_to_piece = {
     "o": partial(Man, color=Black()),
     "x": partial(Man, color=White()),
     "O": partial(FlyingKing, color=Black()),
-    "X": partial(FlyingKing, color=Black()),
+    "X": partial(FlyingKing, color=White()),
     " ": partial(AccessibleField),
     "-": partial(InaccessibleField),
 }
