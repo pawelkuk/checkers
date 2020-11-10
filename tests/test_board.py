@@ -466,3 +466,72 @@ def test_flying_king_jumps_over_opponents_according_to_rules(
     then = CheckersBoard.from_ascii(then, dim=dim)
     given.move(move)
     assert str(given) == str(then)
+
+
+invalid_moves = [
+    (
+        """
+- - - - 
+ - - - -
+- -o- - 
+ - - - -
+- -o-o- 
+ - - - -
+-x- -o- 
+X- - - -
+""",
+        Move(start=(1, "A"), end=(1, "E")),
+        8,
+    ),
+    (
+        """
+- - - - 
+ - - - -
+- -o- - 
+ - - - -
+- -o-o- 
+ - - - -
+-o- -x- 
+X- - - -
+""",
+        Move(start=(1, "A"), end=(1, "E")),
+        8,
+    ),
+    (
+        """
+- - 
+ - -
+-x- 
+ - -
+""",
+        Move(start=(2, "B"), end=(1, "C")),
+        4,
+    ),
+    (
+        """
+- - 
+ - -
+-o- 
+ - -
+""",
+        Move(start=(2, "B"), end=(3, "C")),
+        4,
+    ),
+    (
+        """
+- - 
+ -o-
+- - 
+x- -
+""",
+        Move(start=(1, "A"), end=(4, "D")),
+        4,
+    ),
+]
+
+
+@pytest.mark.parametrize("given,move,dim", invalid_moves)
+def test_board_raises_error_when_given_invalid_move(given, move: Move, dim):
+    given = CheckersBoard.from_ascii(given, dim=dim)
+    with pytest.raises(ValueError):
+        given.move(move)

@@ -85,6 +85,8 @@ class CheckersBoard(Board):
         if not isinstance(self[move.end], AccessibleField):
             raise TypeError("The field is not accessable")
         possible_moves = self._possible_moves(move.start)
+        if move not in possible_moves:
+            raise ValueError("Invalid move")
         for m in possible_moves:
             if m != move:
                 continue
@@ -236,7 +238,6 @@ class CheckersBoard(Board):
             return [(captured, (x, y))]
         for (dx, dy), (new_x, new_y) in possible_captures:
             new_capture = x + dx, y + dy
-            # new_x, new_y = x + 2 * dx, y + 2 * dy
             max_captured = self._get_moves_with_max_capture(
                 new_x, new_y, captured=captured + [new_capture], color=color, mode=mode
             )
