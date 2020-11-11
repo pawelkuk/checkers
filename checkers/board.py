@@ -1,6 +1,17 @@
 from .piece import char_to_piece, Piece, AccessibleField, Man, FlyingKing, Color, White
 from typing import Tuple, Iterable, List, Optional
 
+init_board = """
+-o-o-o-o
+o-o-o-o-
+-o-o-o-o
+ - - - -
+- - - - 
+x-x-x-x-
+-x-x-x-x
+x-x-x-x-
+"""
+
 
 class Move:
     def __init__(
@@ -36,7 +47,8 @@ class Board:
         return row, col
 
     @classmethod
-    def from_ascii(cls, ascii_board: str, dim: int = 8):
+    def from_ascii(cls, ascii_board: Optional[str] = None, dim: int = 8):
+        ascii_board = ascii_board or init_board
         rows = ascii_board.strip().split("\n")
         board = []
         for i, row in enumerate(rows):
