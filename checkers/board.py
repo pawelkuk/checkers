@@ -77,18 +77,20 @@ class Board:
 
 class CheckersBoard(Board):
     def move(self, move: Move):
-        if not isinstance(self[move.start], Piece):
+        moving_piece = self[move.start]
+        self[move.start] = AccessibleField()
+        if not isinstance(moving_piece, Piece):
             raise TypeError("One can move only pieces")
-        if not isinstance(self[move.end], AccessibleField):
+        if self[move.end] != AccessibleField():
             raise TypeError("The field is not accessable")
-        possible_moves = self._possible_moves(move.start)
+        possible_moves = self._possible_moves(move.start, moving_piece)
         if move not in possible_moves:
+            self[move.start] = moving_piece
             raise ValueError("Invalid move")
         for m in possible_moves:
             if m != move:
                 continue
-            self[m.end] = self[m.start]
-            self[m.start] = AccessibleField()
+            self[m.end] = moving_piece
             for captured in m.captured:
                 x, y = captured
                 self._board[x][y] = AccessibleField()
@@ -101,48 +103,47 @@ class CheckersBoard(Board):
         if end_position[0] == end_of_board:
             self[end_position] = FlyingKing(color=self[end_position].color)
 
-    def _possible_moves(self, start: Tuple[int, str]) -> Iterable[Move]:
-        piece = self[start]
+    def _possible_moves(self, start: Tuple[int, str], piece) -> Iterable[Move]:
         x, y = self._cord2idx(*start)
         if type(piece) == Man:
-            possible_moves = self._explore_man_rules(x, y)
+            possible_moves = self._explore_man_rules(x, y, piece)
         elif type(piece) == FlyingKing:
-            possible_moves = self._explore_flying_king_rules(x, y)
+            possible_moves = self._explore_flying_king_rules(x, y, piece)
         else:
             raise TypeError
 
         return possible_moves
 
-    def _explore_man_rules(self, x: int, y: int) -> Iterable:
+    def _explore_man_rules(self, x: int, y: int, piece) -> Iterable:
         start = self._ind2cord((x, y))
 
-        if self._can_capture_from(x, y):
+        if self._can_capture_from(x, y, color=piece.color):
             move_with_captured_pieces = self._get_moves_with_max_capture(
-                x, y, color=self._board[x][y].color, mode="man"
+                x, y, color=piece.color, mode="man"
             )
             possible_moves = [
                 Move(start=start, end=self._ind2cord(end), captured=captured)
                 for captured, end in move_with_captured_pieces
             ]
         else:
-            moves = self._get_diagonal_moves(x, y)
+            moves = self._get_diagonal_moves(x, y, piece)
             possible_moves = [
                 Move(start=start, end=self._ind2cord(end)) for end in moves
             ]
         return possible_moves
 
-    def _explore_flying_king_rules(self, x, y) -> Iterable:
+    def _explore_flying_king_rules(self, x, y, piece) -> Iterable:
         start = self._ind2cord((x, y))
-        if self._can_capture_as_flying_king_from(x, y):
+        if self._can_capture_as_flying_king_from(x, y, color=piece.color):
             move_with_captured_pieces = self._get_moves_with_max_capture(
-                x, y, color=self._board[x][y].color, mode="flying_king"
+                x, y, color=piece.color, mode="flying_king"
             )
             possible_moves = [
                 Move(start=start, end=self._ind2cord(end), captured=captured)
                 for captured, end in move_with_captured_pieces
             ]
         else:
-            possible_moves = self._get_diagonal_moves(x, y)
+            possible_moves = self._get_diagonal_moves(x, y, piece)
             possible_moves = [
                 Move(start=start, end=self._ind2cord(end)) for end in possible_moves
             ]
@@ -151,7 +152,6 @@ class CheckersBoard(Board):
     def _can_capture_as_flying_king_from(
         self, x: int, y: int, color: Optional[Color] = None
     ) -> Iterable[Capture]:
-        color = color or self._board[x][y].color
         dirs = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
         capture_end_position_pairs = []
         for dx, dy in dirs:
@@ -203,8 +203,7 @@ class CheckersBoard(Board):
                 )
         return can_capture
 
-    def _get_diagonal_moves(self, x: int, y: int) -> Iterable[Tuple[int, int]]:
-        piece: Man = self._board[x][y]
+    def _get_diagonal_moves(self, x: int, y: int, piece) -> Iterable[Tuple[int, int]]:
         potential_moves = piece.get_diagonal_moves(x, y, self.dim)
         potential_moves = [
             (x, y)
