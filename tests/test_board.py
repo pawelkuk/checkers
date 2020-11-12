@@ -582,6 +582,17 @@ any_left_data = [
         Black(),
         False,
     ),
+    (
+        """
+- - 
+ - -
+- - 
+ - -
+""",
+        4,
+        Black(),
+        False,
+    ),
 ]
 
 
