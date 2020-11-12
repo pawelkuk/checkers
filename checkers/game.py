@@ -32,7 +32,10 @@ class Game:
         if not self._is_correct_turn(move):
             raise ValueError("The other player must do the move.")
 
-        self._board.move(move)
+        try:
+            self._board.move(move)
+        except Exception as e:
+            raise e
         self._moves.append(move)
 
         if self._player_has_won():
