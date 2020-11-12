@@ -1,7 +1,7 @@
 import pytest
 
 from checkers.board import CheckersBoard, Move
-from checkers.piece import Man, AccessibleField, InaccessibleField
+from checkers.piece import Man, AccessibleField, InaccessibleField, Color, Black, White
 
 init_state = """
 -o-o-o-o
@@ -535,3 +535,57 @@ def test_board_raises_error_when_given_invalid_move(given, move: Move, dim):
     given = CheckersBoard.from_ascii(given, dim=dim)
     with pytest.raises(ValueError):
         given.move(move)
+
+
+any_left_data = [
+    (
+        """
+- - 
+ -o-
+-o- 
+ - -
+""",
+        4,
+        Black(),
+        True,
+    ),
+    (
+        """
+- - 
+ -o-
+-o- 
+ - -
+""",
+        4,
+        White(),
+        False,
+    ),
+    (
+        """
+- - 
+ - -
+- -x
+ -x-
+""",
+        4,
+        White(),
+        True,
+    ),
+    (
+        """
+- - 
+ - -
+- -x
+ -x-
+""",
+        4,
+        Black(),
+        False,
+    ),
+]
+
+
+@pytest.mark.parametrize("board,dim,color,expected_result", any_left_data)
+def test_if_any_pieces_of_given_color_left(board, dim, color, expected_result):
+    board = CheckersBoard.from_ascii(board, dim=4)
+    assert board.any_pieces_left(color) is expected_result

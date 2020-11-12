@@ -86,6 +86,17 @@ class Board:
         board = "\n".join(rows)
         return "\n" + board + "\n"
 
+    def __iter__(self):
+        only_pieces = []
+        for row in self._board:
+            for field_or_piece in row:
+                if isinstance(field_or_piece, Piece):
+                    only_pieces.append(field_or_piece)
+        return iter(only_pieces)
+
+    def any_pieces_left(self, color: Color) -> bool:
+        return any(piece.color == color for piece in self)
+
 
 class CheckersBoard(Board):
     def move(self, move: Move):
