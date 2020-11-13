@@ -600,3 +600,34 @@ any_left_data = [
 def test_if_any_pieces_of_given_color_left(board, dim, color, expected_result):
     board = CheckersBoard.from_ascii(board, dim=4)
     assert board.any_pieces_left(color) is expected_result
+
+
+lower_precedence_data = [
+    (
+        """
+- - 
+ -o-
+- -x
+ -x-
+""",
+        4,
+        Move(start=(1, "C"), end=(2, "B")),
+    ),
+    (
+        """
+-o-X
+ -x-
+-o- 
+ -x-
+""",
+        4,
+        Move(start=(2, "B"), end=(1, "A")),
+    ),
+]
+
+
+@pytest.mark.parametrize("board,dim,move", lower_precedence_data)
+def test_that_lover_precedence_moves_throws_error(board, dim, move):
+    board = CheckersBoard.from_ascii(board, dim=dim)
+    with pytest.raises(ValueError):
+        board.move(move)
