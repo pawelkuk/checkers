@@ -11,6 +11,7 @@ class Game:
     def __init__(
         self, white: Player, black: Player, playing_time: float = 10, board=None
     ):
+        self._init_state = str(board) if board is not None else None
         self._board = board or CheckersBoard.from_ascii()
         white.color = White()
         black.color = Black()
@@ -43,7 +44,7 @@ class Game:
             return Winner(self._winner)
 
         self._update_time()
-        self._turn, self._wait = self._wait, self._turn
+        self._switch_turns()
 
     def _time_is_over(self) -> bool:
         time_elapsed_since_last_move = time() - self._timestamp
@@ -66,4 +67,17 @@ class Game:
             return True
 
     def back(self):
-        raise NotImplementedError
+        self._board = CheckersBoard.from_ascii(
+            self._init_state, len(self._board._board)
+        )
+        self._moves.pop()
+        for move in self._moves:
+            self._board.move(move)
+        self._timestamp = time()
+        self._switch_turns()
+
+    def _switch_turns(self):
+        self._turn, self._wait = self._wait, self._turn
+
+    def __str__(self):
+        return str(self._board)
