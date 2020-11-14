@@ -101,9 +101,10 @@ class Board:
 class CheckersBoard(Board):
     def move(self, move: Move):
         moving_piece = self[move.start]
-        self[move.start] = AccessibleField()
         if not isinstance(moving_piece, Piece):
             raise TypeError("One can move only pieces")
+        forced_move = self._move_with_highest_precedence(moving_piece)
+        self[move.start] = AccessibleField()
         if self[move.end] != AccessibleField():
             raise TypeError("The field is not accessable")
         possible_moves = self._possible_moves(move.start, moving_piece)
@@ -113,11 +114,31 @@ class CheckersBoard(Board):
         for m in possible_moves:
             if m != move:
                 continue
+            if forced_move and len(m.captured) < len(forced_move.captured):
+                self[move.start] = moving_piece
+                raise ValueError("Other move has higher precedence")
             self[m.end] = moving_piece
             for captured in m.captured:
                 x, y = captured
                 self._board[x][y] = AccessibleField()
             self._try_convert_to_flying_king(m.end)
+
+    def _move_with_highest_precedence(self, moving_piece) -> Optional[Move]:
+        all_moves = []
+        for x, row in enumerate(self._board):
+            for y, piece in enumerate(row):
+                if piece is moving_piece:
+                    continue
+                if not isinstance(piece, Piece):
+                    continue
+                if piece.color != moving_piece.color:
+                    continue
+                moves = self._possible_moves(self._ind2cord((x, y)), piece)
+                moves = [m for m in moves if m.captured is not None]
+                all_moves.extend(moves)
+        return (
+            max(all_moves, key=lambda move: len(move.captured)) if all_moves else None
+        )
 
     def _try_convert_to_flying_king(self, end_position: Tuple[int, str]):
         if not isinstance(self[end_position], Man):
