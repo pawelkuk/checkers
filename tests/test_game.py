@@ -147,3 +147,44 @@ def test_player_2_wins_after_winning_move(board, dim, moves):
 
     # then:
     assert winner.player is player_2
+
+
+back_moves_data = [
+    (
+        """
+- -o-
+ - - 
+- - -
+ - -x
+-x- -
+""",
+        5,
+        [
+            Move(start=(2, "E"), end=(3, "D")),
+            Move(start=(5, "D"), end=(4, "C")),
+        ],
+        """
+- -o-
+ - - 
+- -x-
+x- - 
+- - -
+""",
+    ),
+]
+
+
+@pytest.mark.parametrize("board,dim,moves,expected", back_moves_data)
+def test_player_can_undo_move(board, dim, moves, expected):
+    player_1 = Player("Alice")
+    player_2 = Player("Bob")
+    board = CheckersBoard.from_ascii(board, dim=dim)
+    g = Game(player_1, player_2, board=board)
+
+    # when:
+    for move in moves:
+        g.move(move)
+    g.back()
+
+    # then:
+    assert str(g) == expected

@@ -64,3 +64,6 @@ class Game:
             return False
         else:
             return True
+
+    def back(self):
+        raise NotImplementedError

@@ -1,7 +1,7 @@
 import pytest
 
 from checkers.board import CheckersBoard, Move
-from checkers.piece import Man, AccessibleField, InaccessibleField, Color, Black, White
+from checkers.piece import Man, AccessibleField, InaccessibleField, Black, White
 
 init_state = """
 -o-o-o-o
