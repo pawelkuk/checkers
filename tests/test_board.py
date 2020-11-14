@@ -627,7 +627,7 @@ lower_precedence_data = [
 
 
 @pytest.mark.parametrize("board,dim,move", lower_precedence_data)
-def test_that_lover_precedence_moves_throws_error(board, dim, move):
+def test_that_lower_precedence_moves_throws_error(board, dim, move):
     board = CheckersBoard.from_ascii(board, dim=dim)
     with pytest.raises(ValueError):
         board.move(move)
