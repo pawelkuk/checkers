@@ -67,9 +67,7 @@ class Game:
             return True
 
     def undo(self):
-        self._board = CheckersBoard.from_ascii(
-            self._init_state, len(self._board._board)
-        )
+        self._board = CheckersBoard.from_ascii(self._init_state, dim=self._board.dim)
         self._moves.pop()
         for move in self._moves:
             self._board.move(move)
