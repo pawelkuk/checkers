@@ -66,7 +66,7 @@ class Game:
         else:
             return True
 
-    def back(self):
+    def undo(self):
         self._board = CheckersBoard.from_ascii(
             self._init_state, len(self._board._board)
         )

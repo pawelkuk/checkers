@@ -184,7 +184,7 @@ def test_player_can_undo_move(board, dim, moves, expected):
     # when:
     for move in moves:
         g.move(move)
-    g.back()
+    g.undo()
 
     # then:
     assert str(g) == expected
