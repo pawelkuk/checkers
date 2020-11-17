@@ -67,6 +67,8 @@ class Game:
             return True
 
     def undo(self):
+        if self._winner:
+            raise ValueError("Can't undo move after game has ended")
         self._board = CheckersBoard.from_ascii(self._init_state, dim=self._board.dim)
         self._moves.pop()
         for move in self._moves:

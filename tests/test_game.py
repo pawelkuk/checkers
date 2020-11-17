@@ -193,7 +193,6 @@ back_moves_data = [
     ),
 ]
 
-
 @pytest.mark.parametrize("board,dim,moves,expected", back_moves_data)
 def test_player_can_undo_move(board, dim, moves, expected):
     player_1 = Player("Alice")
@@ -208,3 +207,39 @@ def test_player_can_undo_move(board, dim, moves, expected):
 
     # then:
     assert str(g) == expected
+
+undo_after_game_end =[
+    (
+        """
+- - -
+ - -o
+- - -
+ - -x
+- - -
+""",
+        5,
+        [
+            Move(start=(2, "E"), end=(3, "D")),
+            Move(start=(4, "E"), end=(2, "C")),
+        ],
+        """
+- - -
+ - - 
+- - -
+ -o- 
+- - -
+""",
+    ),
+
+]
+@pytest.mark.parametrize("board,dim,moves,expected", undo_after_game_end)
+def test_player_can_not_undo_move_if_the_game_ended(board, dim, moves, expected):
+    player_1 = Player("Alice")
+    player_2 = Player("Bob")
+    board = CheckersBoard.from_ascii(board, dim=dim)
+    g = Game(player_1, player_2, board=board)
+    for move in moves:
+        g.move(move)
+
+    with pytest.raises(ValueError):
+        g.undo()
