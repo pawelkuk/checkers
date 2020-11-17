@@ -111,10 +111,7 @@ player_2_win_data = [
  - -
 """,
         4,
-        [
-            Move(start=(2, "D"), end=(3, "C")),
-            Move(start=(4, "B"), end=(2, "D")),
-        ],
+        [Move(start=(2, "D"), end=(3, "C")), Move(start=(4, "B"), end=(2, "D")),],
     ),
     (
         """
@@ -125,10 +122,7 @@ player_2_win_data = [
 - - -
 """,
         5,
-        [
-            Move(start=(2, "E"), end=(3, "D")),
-            Move(start=(4, "E"), end=(4, "A")),
-        ],
+        [Move(start=(2, "E"), end=(3, "D")), Move(start=(4, "E"), end=(4, "A")),],
     ),
 ]
 
@@ -159,10 +153,7 @@ back_moves_data = [
 -x- -
 """,
         5,
-        [
-            Move(start=(2, "E"), end=(3, "D")),
-            Move(start=(5, "D"), end=(4, "C")),
-        ],
+        [Move(start=(2, "E"), end=(3, "D")), Move(start=(5, "D"), end=(4, "C")),],
         """
 - -o-
  - - 
@@ -180,9 +171,7 @@ back_moves_data = [
 -x- -
 """,
         5,
-        [
-            Move(start=(2, "E"), end=(3, "D")),
-        ],
+        [Move(start=(2, "E"), end=(3, "D")),],
         """
 - -o-
  - - 
@@ -193,8 +182,10 @@ back_moves_data = [
     ),
 ]
 
+
 @pytest.mark.parametrize("board,dim,moves,expected", back_moves_data)
 def test_player_can_undo_move(board, dim, moves, expected):
+    # given
     player_1 = Player("Alice")
     player_2 = Player("Bob")
     board = CheckersBoard.from_ascii(board, dim=dim)
@@ -208,7 +199,8 @@ def test_player_can_undo_move(board, dim, moves, expected):
     # then:
     assert str(g) == expected
 
-undo_after_game_end =[
+
+undo_after_game_end = [
     (
         """
 - - -
@@ -218,10 +210,7 @@ undo_after_game_end =[
 - - -
 """,
         5,
-        [
-            Move(start=(2, "E"), end=(3, "D")),
-            Move(start=(4, "E"), end=(2, "C")),
-        ],
+        [Move(start=(2, "E"), end=(3, "D")), Move(start=(4, "E"), end=(2, "C")),],
         """
 - - -
  - - 
@@ -230,8 +219,9 @@ undo_after_game_end =[
 - - -
 """,
     ),
-
 ]
+
+
 @pytest.mark.parametrize("board,dim,moves,expected", undo_after_game_end)
 def test_player_can_not_undo_move_if_the_game_ended(board, dim, moves, expected):
     player_1 = Player("Alice")
