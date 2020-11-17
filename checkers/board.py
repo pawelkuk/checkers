@@ -260,7 +260,12 @@ class CheckersBoard(Board):
         return potential_moves
 
     def _get_moves_with_max_capture(
-        self, x: int, y: int, color: Color, captured=None, mode: str = "man",
+        self,
+        x: int,
+        y: int,
+        color: Color,
+        captured=None,
+        mode: str = "man",
     ) -> List[Tuple[List[Tuple[int, int]], Tuple[int, int]]]:
         captured = captured or []
         possible_captures = (

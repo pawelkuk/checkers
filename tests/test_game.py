@@ -111,7 +111,10 @@ player_2_win_data = [
  - -
 """,
         4,
-        [Move(start=(2, "D"), end=(3, "C")), Move(start=(4, "B"), end=(2, "D")),],
+        [
+            Move(start=(2, "D"), end=(3, "C")),
+            Move(start=(4, "B"), end=(2, "D")),
+        ],
     ),
     (
         """
@@ -122,7 +125,10 @@ player_2_win_data = [
 - - -
 """,
         5,
-        [Move(start=(2, "E"), end=(3, "D")), Move(start=(4, "E"), end=(4, "A")),],
+        [
+            Move(start=(2, "E"), end=(3, "D")),
+            Move(start=(4, "E"), end=(4, "A")),
+        ],
     ),
 ]
 
@@ -153,7 +159,10 @@ back_moves_data = [
 -x- -
 """,
         5,
-        [Move(start=(2, "E"), end=(3, "D")), Move(start=(5, "D"), end=(4, "C")),],
+        [
+            Move(start=(2, "E"), end=(3, "D")),
+            Move(start=(5, "D"), end=(4, "C")),
+        ],
         """
 - -o-
  - - 
@@ -171,7 +180,9 @@ back_moves_data = [
 -x- -
 """,
         5,
-        [Move(start=(2, "E"), end=(3, "D")),],
+        [
+            Move(start=(2, "E"), end=(3, "D")),
+        ],
         """
 - -o-
  - - 
@@ -210,7 +221,10 @@ undo_after_game_end = [
 - - -
 """,
         5,
-        [Move(start=(2, "E"), end=(3, "D")), Move(start=(4, "E"), end=(2, "C")),],
+        [
+            Move(start=(2, "E"), end=(3, "D")),
+            Move(start=(4, "E"), end=(2, "C")),
+        ],
         """
 - - -
  - - 
