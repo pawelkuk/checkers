@@ -79,5 +79,5 @@ class Game:
     def _switch_turns(self):
         self._turn, self._wait = self._wait, self._turn
 
-    def __str__(self):
+    def board(self):
         return str(self._board)
