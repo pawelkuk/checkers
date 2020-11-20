@@ -1,2 +1,6 @@
 pytest
 ipdb
+django
+channels
+channels_redis
+psycopg2
