@@ -1,4 +1,5 @@
 import Board from "../Board/index";
+import Piece from "../Piece/index";
 
 function App() {
   return (
