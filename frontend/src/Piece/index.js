@@ -3,8 +3,8 @@ import "./style.css";
 
 function Piece({ color = "black" }) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px">
-      <circle cx="20" cy="20" r="20" fill={color} />
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <circle cx="50%" cy="50%" r="35%" fill={color} />
     </svg>
   );
 }
