@@ -5,18 +5,30 @@ import "./style.css";
 import Square from "../Square/index";
 import Piece from "../Piece/index";
 
+function renderPiece(x, y, [pieceX, pieceY]) {
+  if (x === pieceX && y === pieceY) {
+    return <Piece />;
+  }
+}
+
 function Row({
   dim = 8,
   colorPalette = { accessible: "green", inaccessible: "yellow" },
   rowIdx = 0,
+  position,
+  onChange,
 }) {
   const range = [...Array(dim).keys()];
   let row = range.map((colIdx) => {
-    const shouldDisplay =
-      rowIdx % 2 !== colIdx % 2 && !(3 <= rowIdx && rowIdx <= 4);
     return (
-      <Square key={colIdx} colorPalette={colorPalette} x={rowIdx} y={colIdx}>
-        {shouldDisplay ? <Piece x={rowIdx} y={colIdx} /> : ""}
+      <Square
+        key={colIdx}
+        colorPalette={colorPalette}
+        x={rowIdx}
+        y={colIdx}
+        onChange={onChange}
+      >
+        {renderPiece(rowIdx, colIdx, position)}
       </Square>
     );
   });
@@ -26,10 +38,21 @@ function Row({
 function Board({
   dim = 8,
   colorPalette = { accessible: "green", inaccessible: "yellow" },
+  position,
+  onChange,
 }) {
   const range = [...Array(dim).keys()];
   const board = range.map((i) => {
-    return <Row dim={dim} colorPalette={colorPalette} rowIdx={i} />;
+    return (
+      <Row
+        key={i}
+        dim={dim}
+        colorPalette={colorPalette}
+        rowIdx={i}
+        position={position}
+        onChange={onChange}
+      />
+    );
   });
   return <DndProvider backend={HTML5Backend}>{board}</DndProvider>;
 }
