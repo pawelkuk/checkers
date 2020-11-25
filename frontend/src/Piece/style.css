@@ -1,0 +1,11 @@
+.drag-wrapper {
+  cursor: move;
+  width: 50px;
+  height: 50px;
+}
+
+.circle {
+  cx: 50%;
+  cy: 50%;
+  r: 35%;
+}

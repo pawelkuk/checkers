@@ -1,4 +1,6 @@
 import React from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import "./style.css";
 import Square from "../Square/index";
 import Piece from "../Piece/index";
@@ -29,7 +31,7 @@ function Board({
   const board = range.map((i) => {
     return <Row dim={dim} colorPalette={colorPalette} rowIdx={i} />;
   });
-  return board;
+  return <DndProvider backend={HTML5Backend}>{board}</DndProvider>;
 }
 
 export default Board;
