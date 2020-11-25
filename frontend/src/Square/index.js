@@ -24,6 +24,20 @@ function Square({ colorPalette, x, y, children, onChange }) {
       }}
     >
       {children}
+      {isOver && (
+        <div
+          style={{
+            position: "inherit",
+            top: 0,
+            left: 0,
+            height: "50px",
+            width: "50px",
+            zIndex: 1,
+            opacity: 0.5,
+            backgroundColor: "yellow",
+          }}
+        />
+      )}
     </div>
   );
 }
