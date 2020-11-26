@@ -34,7 +34,7 @@ function Square({ colorPalette, x, y, children, onChange }) {
             width: "50px",
             zIndex: 1,
             opacity: 0.5,
-            backgroundColor: "yellow",
+            backgroundColor: "red",
           }}
         />
       )}

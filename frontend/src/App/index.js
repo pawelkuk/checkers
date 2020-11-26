@@ -3,9 +3,12 @@ import Board from "../Board/index";
 
 function App() {
   const [piecePosition, setPiecePosition] = useState([0, 0]);
+  const onChange = (position) => {
+    setPiecePosition(position);
+  };
   return (
     <div>
-      <Board position={piecePosition} onChange={setPiecePosition} />
+      <Board position={piecePosition} onChange={onChange} />
     </div>
   );
 }
