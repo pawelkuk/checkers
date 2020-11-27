@@ -20,7 +20,7 @@ class Game:
         self._moves = []
         self._turn.remaining_time = playing_time * SECS
         self._wait.remaining_time = playing_time * SECS
-        self._timestamp = time()
+        self._timestamps = [time()]
         self._winner: Optional[Winner] = None
         self._game_over: False
 
@@ -47,7 +47,7 @@ class Game:
         self._switch_turns()
 
     def _time_is_over(self) -> bool:
-        time_elapsed_since_last_move = time() - self._timestamp
+        time_elapsed_since_last_move = time() - self._timestamps[-1]
         new_remaining_time = self._turn.remaining_time - time_elapsed_since_last_move
         return new_remaining_time <= 0
 
@@ -55,9 +55,9 @@ class Game:
         return self._board[move.start].color == self._turn.color
 
     def _update_time(self):
-        time_elapsed_since_last_move = time() - self._timestamp
+        time_elapsed_since_last_move = time() - self._timestamps[-1]
         self._turn.remaining_time -= time_elapsed_since_last_move
-        self._timestamp = time()
+        self._timestamps.append(time())
 
     def _player_has_won(self):
         opponent_color = self._wait.color
