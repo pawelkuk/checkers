@@ -22,7 +22,7 @@ class Game:
         self._wait.remaining_time = playing_time * SECS
         self._timestamps = [time()]
         self._winner: Optional[Winner] = None
-        self._game_over: False
+        self._game_over = False
 
     def move(self, move: Move) -> Optional[Winner]:
         if self._winner:
