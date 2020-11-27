@@ -47,16 +47,14 @@ class Game:
         self._switch_turns()
 
     def _time_is_over(self) -> bool:
-        time_elapsed_since_last_move = time() - self._timestamps[-1]
-        new_remaining_time = self._turn.remaining_time - time_elapsed_since_last_move
-        return new_remaining_time <= 0
+        tmp = self._timestamps + [time()]
+        all_moves_duration = sum(i - j for i, j in zip(tmp[::-2], tmp[-2::-2]))
+        return all_moves_duration > self._turn.remaining_time
 
     def _is_correct_turn(self, move: Move) -> bool:
         return self._board[move.start].color == self._turn.color
 
     def _update_time(self):
-        time_elapsed_since_last_move = time() - self._timestamps[-1]
-        self._turn.remaining_time -= time_elapsed_since_last_move
         self._timestamps.append(time())
 
     def _player_has_won(self):
@@ -73,7 +71,7 @@ class Game:
         self._moves.pop()
         for move in self._moves:
             self._board.move(move)
-        self._timestamp = time()
+        self._update_time()
         self._switch_turns()
 
     def _switch_turns(self):
