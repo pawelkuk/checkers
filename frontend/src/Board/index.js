@@ -17,6 +17,7 @@ function Row({
   rowIdx = 0,
   positions,
   onChange,
+  perspective,
 }) {
   const range = [...Array(dim).keys()];
   let row = range.map((colIdx) => {
@@ -32,28 +33,30 @@ function Row({
       </Square>
     );
   });
+  row = perspective === "white" ? row : row.reverse();
   return <div className="board-row">{row}</div>;
 }
 
 function Board({
   dim = 8,
   colorPalette = { accessible: "green", inaccessible: "yellow" },
+  perspective = "white" || "black",
   positions,
   onChange,
 }) {
   const range = [...Array(dim).keys()];
-  const board = range.map((i) => {
-    return (
-      <Row
-        key={i}
-        dim={dim}
-        colorPalette={colorPalette}
-        rowIdx={i}
-        positions={positions}
-        onChange={onChange}
-      />
-    );
-  });
+  let board = range.map((i) => (
+    <Row
+      key={i}
+      dim={dim}
+      colorPalette={colorPalette}
+      rowIdx={i}
+      positions={positions}
+      onChange={onChange}
+      perspective={perspective}
+    />
+  ));
+  board = perspective === "white" ? board : board.reverse();
   return <DndProvider backend={HTML5Backend}>{board}</DndProvider>;
 }
 

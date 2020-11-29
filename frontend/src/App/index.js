@@ -27,7 +27,11 @@ function App() {
   };
   return (
     <div>
-      <Board positions={piecePositions} onChange={onChange} />
+      <Board
+        positions={piecePositions}
+        onChange={onChange}
+        perspective="white"
+      />
     </div>
   );
 }
