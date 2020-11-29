@@ -15,9 +15,9 @@ function App() {
   const initBoard = {};
   for (let i = 1; i <= 32; i++) initBoard[i] = idx2piece(i);
   const [piecePositions, setPiecePosition] = useState(initBoard);
-  const onChange = (to, from, color) => {
+  const onChange = (from, to, color) => {
     const piece = coordsToCheckersNotation(...to);
-    if (Number.isInteger(piece)) {
+    if (Number.isInteger(piece) && piecePositions[piece] === null) {
       piecePositions[piece] = color;
       const toNull = coordsToCheckersNotation(...from);
       piecePositions[toNull] = null;
