@@ -32,6 +32,12 @@ function App() {
         onChange={onChange}
         perspective="white"
       />
+      ----
+      <Board
+        positions={piecePositions}
+        onChange={onChange}
+        perspective="black"
+      />
     </div>
   );
 }

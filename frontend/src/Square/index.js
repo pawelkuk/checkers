@@ -17,7 +17,7 @@ function Square({ colorPalette, x, y, children, onChange }) {
   });
   return (
     <div
-      ref={drop}
+      ref={ifAccessible ? drop : null}
       className="square"
       style={{
         backgroundColor: squareColor,
