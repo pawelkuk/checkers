@@ -27,7 +27,7 @@ function Square({ colorPalette, x, y, children, onChange }) {
     : colorPalette.inaccessible;
   const [{ isOver }, drop] = useDrop({
     accept: ItemTypes.PIECE,
-    drop: () => onChange([x, y]),
+    drop: (item) => onChange([x, y], [item.x, item.y], item.color),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),

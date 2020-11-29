@@ -8,19 +8,20 @@ function idx2piece(idx) {
 }
 
 function App() {
-  const allAccessibleFields = 33;
-  const arr = Array.from({ length: allAccessibleFields }, (_, index) => [
-    index,
-    idx2piece(index),
-  ]);
-  const initBoard = Object.fromEntries(arr);
-  const [piecePositions, setPiecePosition] = useState([0, 0]);
-  const onChange = (position) => {
-    setPiecePosition(position);
+  const initBoard = {};
+  for (let i = 1; i <= 32; i++) initBoard[i] = idx2piece(i);
+  const [piecePositions, setPiecePosition] = useState(initBoard);
+  const onChange = ([x, y], [xx, yy], color) => {
+    const piece = x % 2 === 0 ? 4 * x + (y + 1) / 2 : 4 * x + y / 2 + 1;
+    if (Number.isInteger(piece)) piecePositions[piece] = color;
+    const toNull = xx % 2 === 0 ? 4 * xx + (yy + 1) / 2 : 4 * xx + yy / 2 + 1;
+    piecePositions[toNull] = null;
+    const copy = Object.assign({}, piecePositions);
+    setPiecePosition(copy);
   };
   return (
     <div>
-      <Board position={piecePositions} onChange={onChange} />
+      <Board positions={piecePositions} onChange={onChange} />
     </div>
   );
 }

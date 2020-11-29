@@ -5,17 +5,17 @@ import "./style.css";
 import Square from "../Square/index";
 import Piece from "../Piece/index";
 
-function renderPiece(x, y, [pieceX, pieceY]) {
-  if (x === pieceX && y === pieceY) {
-    return <Piece />;
-  }
+function renderPiece(x, y, positions) {
+  const piece = x % 2 === 0 ? 4 * x + (y + 1) / 2 : 4 * x + y / 2 + 1;
+  if (Number.isInteger(piece) && !!positions[piece])
+    return <Piece color={positions[piece]} x={x} y={y} />;
 }
 
 function Row({
   dim = 8,
   colorPalette = { accessible: "green", inaccessible: "yellow" },
   rowIdx = 0,
-  position,
+  positions,
   onChange,
 }) {
   const range = [...Array(dim).keys()];
@@ -28,7 +28,7 @@ function Row({
         y={colIdx}
         onChange={onChange}
       >
-        {renderPiece(rowIdx, colIdx, position)}
+        {renderPiece(rowIdx, colIdx, positions)}
       </Square>
     );
   });
@@ -38,7 +38,7 @@ function Row({
 function Board({
   dim = 8,
   colorPalette = { accessible: "green", inaccessible: "yellow" },
-  position,
+  positions,
   onChange,
 }) {
   const range = [...Array(dim).keys()];
@@ -49,7 +49,7 @@ function Board({
         dim={dim}
         colorPalette={colorPalette}
         rowIdx={i}
-        position={position}
+        positions={positions}
         onChange={onChange}
       />
     );

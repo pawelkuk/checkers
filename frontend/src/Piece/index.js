@@ -4,9 +4,9 @@ import { useDrag } from "react-dnd";
 import { ItemTypes } from "../Constants/index";
 import "./style.css";
 
-function Piece({ color = "black" }) {
+function Piece({ color = "black", x = -1, y = -1 }) {
   const [{ isDragging }, drag] = useDrag({
-    item: { type: ItemTypes.PIECE },
+    item: { type: ItemTypes.PIECE, x: x, y: y, color: color },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
