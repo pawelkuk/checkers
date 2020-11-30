@@ -1,4 +1,13 @@
-from .piece import char_to_piece, Piece, AccessibleField, Man, FlyingKing, Color, White
+from .piece import (
+    char_to_piece,
+    Piece,
+    AccessibleField,
+    Man,
+    FlyingKing,
+    Color,
+    White,
+    color_to_char,
+)
 from typing import Tuple, Iterable, List, Optional, Dict
 
 init_board = """
@@ -291,13 +300,29 @@ class CheckersBoard(Board):
         ]
         return equivalent_max_captures
 
+    @staticmethod
+    def _checkers_notation_to_coord(i: int) -> Tuple[int, int]:
+        x = (i - 1) // 4
+        y = 1 - (x % 2) + 2 * ((i - 1) % 4)
+        return x, y
+
     def to_checkers_notation(self) -> Dict[int, Optional[str]]:
         checkers_notation = {}
         for i in range(1, 33):
-            x = (i - 1) // 4
-            y = 1 - (x % 2) + 2 * ((i - 1) % 4)
+            x, y = self._checkers_notation_to_coord(i)
             if isinstance(self._board[x][y], Piece):
                 checkers_notation[i] = self._board[x][y].color.name
             else:
                 checkers_notation[i] = None
         return checkers_notation
+
+    @classmethod
+    def from_checkers_notation(
+        cls, checkers_notation: Dict[int, Optional[str]]
+    ) -> "CheckersBoard":
+        board = cls.from_ascii()
+
+        for idx, piece in checkers_notation.items():
+            x, y = cls._checkers_notation_to_coord(idx)
+            board._board[x][y] = char_to_piece[color_to_char[piece]]()
+        return board

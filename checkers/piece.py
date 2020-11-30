@@ -82,3 +82,9 @@ char_to_piece = {
     " ": partial(AccessibleField),
     "-": partial(InaccessibleField),
 }
+
+color_to_char = {
+    "white": "x",
+    "black": "o",
+    None: " ",
+}

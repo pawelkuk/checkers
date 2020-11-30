@@ -633,7 +633,7 @@ def test_that_lower_precedence_moves_throws_error(board, dim, move):
         board.move(move)
 
 
-def test_to_checkers_notation_converts_board_to_dict():
+def test_converts_between_checkers_notation_and_board_object():
     board = CheckersBoard.from_ascii(init_state, dim=8)
 
     def idx2piece(idx):
@@ -645,4 +645,6 @@ def test_to_checkers_notation_converts_board_to_dict():
             return "white"
 
     expected_dict = {i: idx2piece(i) for i in range(1, 33)}
+    new_board = CheckersBoard.from_checkers_notation(expected_dict)
     assert expected_dict == board.to_checkers_notation()
+    assert str(new_board) == str(board)
