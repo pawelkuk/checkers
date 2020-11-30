@@ -1,5 +1,5 @@
 from .piece import char_to_piece, Piece, AccessibleField, Man, FlyingKing, Color, White
-from typing import Tuple, Iterable, List, Optional
+from typing import Tuple, Iterable, List, Optional, Dict
 
 init_board = """
 -o-o-o-o
@@ -260,12 +260,7 @@ class CheckersBoard(Board):
         return potential_moves
 
     def _get_moves_with_max_capture(
-        self,
-        x: int,
-        y: int,
-        color: Color,
-        captured=None,
-        mode: str = "man",
+        self, x: int, y: int, color: Color, captured=None, mode: str = "man",
     ) -> List[Tuple[List[Tuple[int, int]], Tuple[int, int]]]:
         captured = captured or []
         possible_captures = (
@@ -295,3 +290,14 @@ class CheckersBoard(Board):
             cap for cap in new_captures if len(cap[0]) == max_capture
         ]
         return equivalent_max_captures
+
+    def to_checkers_notation(self) -> Dict[int, Optional[str]]:
+        checkers_notation = {}
+        for i in range(1, 33):
+            x = (i - 1) // 4
+            y = 1 - (x % 2) + 2 * ((i - 1) % 4)
+            if isinstance(self._board[x][y], Piece):
+                checkers_notation[i] = self._board[x][y].color.name
+            else:
+                checkers_notation[i] = None
+        return checkers_notation

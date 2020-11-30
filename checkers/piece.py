@@ -22,6 +22,7 @@ class AccessibleField(Field):
 
 class Color:
     char = "?"
+    name = "?"
 
     def __str__(self):
         return self.char
@@ -32,10 +33,12 @@ class Color:
 
 class White(Color):
     char = "x"
+    name = "white"
 
 
 class Black(Color):
     char = "o"
+    name = "black"
 
 
 class Piece:

@@ -631,3 +631,18 @@ def test_that_lower_precedence_moves_throws_error(board, dim, move):
     board = CheckersBoard.from_ascii(board, dim=dim)
     with pytest.raises(ValueError):
         board.move(move)
+
+
+def test_to_checkers_notation_converts_board_to_dict():
+    board = CheckersBoard.from_ascii(init_state, dim=8)
+
+    def idx2piece(idx):
+        if 0 < idx <= 12:
+            return "black"
+        if 12 < idx <= 20:
+            return None
+        if 20 < idx <= 32:
+            return "white"
+
+    expected_dict = {i: idx2piece(i) for i in range(1, 33)}
+    assert expected_dict == board.to_checkers_notation()
